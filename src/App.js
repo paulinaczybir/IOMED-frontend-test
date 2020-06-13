@@ -1,26 +1,86 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import "@elastic/eui/dist/eui_theme_light.css";
+import "./App.css";
+import {
+  EuiButton,
+  EuiFlexGroup,
+  EuiComboBox,
+  EuiFlexItem,
+  EuiCard,
+  EuiIcon,
+} from "@elastic/eui";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      listOfMunicipios: {
+        municipios: [],
+      },
+      selectedOption: [{ label: "Barcelona" }],
+    };
+  }
+
+  componentDidMount() {
+    this.getMunicipios();
+  }
+
+  getMunicipios = (event) => {
+    let url = `//www.el-tiempo.net/api/json/v2/provincias/08/municipios`;
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        this.setState({ listOfMunicipios: data });
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+      });
+  };
+
+  getLabels = () => {
+    return this.state.listOfMunicipios.municipios.map((e) => {
+      return { label: e.NOMBRE };
+    });
+  };
+
+  onChange = (newOption) => {
+    this.setState({
+      selectedOption: newOption,
+    });
+  };
+
+
+  search = () => {
+    console.log("button works");
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <EuiComboBox
+          placeholder="Select a single option"
+          singleSelection={{ asPlainText: true }}
+          options={this.getLabels()}
+          selectedOptions={this.state.selectedOption}
+          onChange={this.onChange}
+          isClearable={false}
+        />
+        <EuiButton onClick={this.search}>Search</EuiButton>
+        <EuiFlexGroup>
+          <EuiFlexItem>
+            <EuiCard
+              icon={<EuiIcon size="xxl" type={`logo`} />}
+              title={this.state.selectedOption[0].label}
+              layout={"vertical"}
+              display={"panel"}
+              description="12 celsius 58% chance of rain"
+            />
+          </EuiFlexItem>
+        </EuiFlexGroup>
+      </div>
+    );
+  }
 }
 
 export default App;
