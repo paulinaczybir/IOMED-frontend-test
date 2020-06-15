@@ -11,8 +11,11 @@ import {
   EuiPageContentBody,
   EuiPageContentHeader,
   EuiPageContentHeaderSection,
-  EuiTitle,
+  EuiTitle
 } from "@elastic/eui";
+
+var he = require('he');
+
 
 class App extends React.Component {
   constructor(props) {
@@ -20,19 +23,20 @@ class App extends React.Component {
     this.state = {
       listOfMunicipios: { municipios: [] },
       selectedOption: [{ label: "Barcelona", municipioId: "08019" }],
-      actualTemp: null,
-      rainPropability: null,
+      actualTemp: "",
+      rainPropability: "",
     };
   }
 
   componentDidMount() {
     this.getMunicipios();
+    this.getWeather("08019");
   }
 
   getMunicipios = (event) => {
     let url = `//www.el-tiempo.net/api/json/v2/provincias/08/municipios`;
 
-    fetch(url)
+    fetch(url)  
       .then((response) => response.json())
       .then((data) => {
         this.setState({ listOfMunicipios: data });
@@ -44,15 +48,12 @@ class App extends React.Component {
 
   getLabels = () => {
     return this.state.listOfMunicipios.municipios.map((e) => {
-      return { label: e.NOMBRE, municipioId: e.CODIGOINE };
+      return { label: he.decode(e.NOMBRE), municipioId: e.CODIGOINE };
     });
   };
 
   getWeather = (municipioId) => {
-    let url = `//www.el-tiempo.net/api/json/v2/provincias/08/municipios/${municipioId.substring(
-      0,
-      5
-    )}`;
+    let url = `//www.el-tiempo.net/api/json/v2/provincias/08/municipios/${municipioId.substring(0,5)}`;
 
     fetch(url)
       .then((response) => response.json())
@@ -100,11 +101,11 @@ class App extends React.Component {
                   isClearable={false}
                 />
                 <EuiCard
-                  icon={<EuiIcon size="xxl" type={`logo`} />}
+                  icon={<EuiIcon size="m" type={`logo`} />}
                   title={this.state.selectedOption[0].label}
                   layout={"vertical"}
                   display={"panel"}
-                  description={`${this.state.actualTemp} celsius ${this.state.rainPropability} % chance of rain`}
+                  description={`${this.state.actualTemp} °C\n${this.state.rainPropability} % chance of rain`}
                 />
               </EuiPageContentBody>
             </EuiPageContent>
