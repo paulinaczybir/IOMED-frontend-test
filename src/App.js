@@ -4,14 +4,14 @@ import "./App.css";
 import {
   EuiComboBox,
   EuiCard,
-  EuiIcon,
   EuiPage,
   EuiPageBody,
   EuiPageContent,
   EuiPageContentBody,
   EuiPageContentHeader,
   EuiPageContentHeaderSection,
-  EuiTitle
+  EuiTitle,
+  EuiTextColor
 } from "@elastic/eui";
 
 var he = require('he');
@@ -24,7 +24,7 @@ class App extends React.Component {
       listOfMunicipios: { municipios: [] },
       selectedOption: [{ label: "Barcelona", municipioId: "08019" }],
       actualTemp: "",
-      rainPropability: "",
+      rainProbability: "",
     };
   }
 
@@ -33,7 +33,7 @@ class App extends React.Component {
     this.getWeather("08019");
   }
 
-  getMunicipios = (event) => {
+  getMunicipios = () => {
     let url = `//www.el-tiempo.net/api/json/v2/provincias/08/municipios`;
 
     fetch(url)  
@@ -60,7 +60,7 @@ class App extends React.Component {
       .then((data) => {
         this.setState({
           actualTemp: data.temperatura_actual,
-          rainPropability: data.lluvia,
+          rainProbability: data.lluvia,
         });
       })
       .catch((error) => {
@@ -86,7 +86,7 @@ class App extends React.Component {
               <EuiPageContentHeader>
                 <EuiPageContentHeaderSection>
                   <EuiTitle>
-                    <h2>Barcelona's municipios weather</h2>
+                    <h2><EuiTextColor color="secondary">Barcelona's municipios weather</EuiTextColor></h2>
                   </EuiTitle>
                 </EuiPageContentHeaderSection>
               </EuiPageContentHeader>
@@ -101,11 +101,11 @@ class App extends React.Component {
                   isClearable={false}
                 />
                 <EuiCard
-                  icon={<EuiIcon size="m" type={`logo`} />}
                   title={this.state.selectedOption[0].label}
                   layout={"vertical"}
                   display={"panel"}
-                  description={`${this.state.actualTemp} °C\n${this.state.rainPropability} % chance of rain`}
+                  description={<div><p>{`${this.state.actualTemp} °C`}</p>
+                  <p>{`${this.state.rainProbability} % Chance of rain`}</p></div>}
                 />
               </EuiPageContentBody>
             </EuiPageContent>
